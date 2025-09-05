@@ -326,6 +326,27 @@ exports.getProductDetails = async (req, res, next) => {
     }
 };
 
+// API endpoint to get all products for invoice creation
+exports.getAllProductsAPI = async (req, res, next) => {
+    try {
+        const products = await Product.find({ isActive: true })
+            .select('_id name description hsnCode unit sellingPrice gstRate quantityInStock')
+            .sort({ name: 1 });
+        
+        res.json({
+            success: true,
+            products: products
+        });
+        
+    } catch (error) {
+        console.error('Error fetching products for API:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Error fetching products' 
+        });
+    }
+};
+
 // API endpoint to get product details
 exports.getProductById = async (req, res, next) => {
     try {

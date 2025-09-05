@@ -10,6 +10,7 @@ const {
     postEditProduct,
     deleteProduct,
     getProductDetails,
+    getAllProductsAPI,
     getProductById
 } = require('../controllers/adminController');
 const {requireAdminAuth} = require('../controllers/authController');
@@ -28,6 +29,7 @@ adminRouter.post('/products/delete/:id', requireAdminAuth, deleteProduct);
 adminRouter.get('/products/details/:id', requireAdminAuth, getProductDetails);
 
 // API routes
+adminRouter.get('/api/products', requireAdminAuth, getAllProductsAPI);
 adminRouter.get('/api/products/:id', requireAdminAuth, getProductById);
 
 module.exports = adminRouter;

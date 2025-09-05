@@ -332,18 +332,39 @@
 
                 // Fetch products when page loads
                 document.addEventListener('DOMContentLoaded', function () {
-                    fetchProducts();
+                    fetchProducts().then(() => {
+                        // Add first item row after products are loaded
+                        if (products.length > 0) {
+                            console.log('Adding first item row with', products.length, 'products');
+                            addItemRow();
+                        } else {
+                            console.warn('No products available to add to invoice');
+                            showNotification('No products found. Please add products first.', 'warning');
+                        }
+                    });
                 });
 
                 // Fetch products from API
                 async function fetchProducts() {
                     try {
                         const response = await fetch('/admin/api/products');
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
                         const data = await response.json();
-                        products = data.products || [];
+                        
+                        if (data.success && data.products) {
+                            products = data.products;
+                            console.log('Products loaded successfully:', products.length);
+                        } else {
+                            throw new Error('Invalid response format');
+                        }
                     } catch (error) {
                         console.error('Error fetching products:', error);
-                        showNotification('Error loading products', 'error');
+                        showNotification('Error loading products. Please refresh the page.', 'error');
+                        products = []; // Ensure products is an array
                     }
                 }
 
@@ -504,16 +525,11 @@
                 // Update totals when discount changes
                 document.getElementById('discountRate').addEventListener('input', calculateTotals);
 
-                // Add first item row by default
-                if (products.length > 0) {
-                    addItemRow();
-                }
-
                 // Show notification
                 function showNotification(message, type = 'info') {
                     // Create notification element
                     const notification = document.createElement('div');
-                    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+                    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
                         }`;
                     notification.textContent = message;
 
@@ -523,13 +539,6 @@
                         notification.remove();
                     }, 3000);
                 }
-
-                // Add item row when products are loaded
-                setTimeout(() => {
-                    if (products.length > 0) {
-                        addItemRow();
-                    }
-                }, 500);
             </script>
     </body>
 
