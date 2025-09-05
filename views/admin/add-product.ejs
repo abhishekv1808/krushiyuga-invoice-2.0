@@ -1,0 +1,267 @@
+<%- include('../partials/head.ejs') %>
+
+    <body>
+        <%- include('../partials/navbar.ejs') %>
+
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center space-x-4">
+                        <a href="/products" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </a>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">Add New Product</h1>
+                            <p class="text-gray-600 mt-1">Add a new agricultural product to your inventory</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <% if (typeof errorMessage !=='undefined' && errorMessage) { %>
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    <%= errorMessage %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                        <!-- Form -->
+                        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                            <form action="/products/add" method="POST" class="space-y-6 p-6">
+                                <!-- Basic Information -->
+                                <div class="border-b border-gray-200 pb-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="name"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Product Name
+                                                *</label>
+                                            <input type="text" id="name" name="name" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="e.g. Organic Wheat Seeds">
+                                        </div>
+
+                                        <div>
+                                            <label for="category"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                                            <select id="category" name="category" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                                <option value="">Select Category</option>
+                                                <option value="Seeds & Planting">Seeds & Planting</option>
+                                                <option value="Fertilizers">Fertilizers</option>
+                                                <option value="Pesticides & Herbicides">Pesticides & Herbicides</option>
+                                                <option value="Farm Tools & Equipment">Farm Tools & Equipment</option>
+                                                <option value="Irrigation Supplies">Irrigation Supplies</option>
+                                                <option value="Organic Products">Organic Products</option>
+                                                <option value="Grains & Cereals">Grains & Cereals</option>
+                                                <option value="Vegetables">Vegetables</option>
+                                                <option value="Fruits">Fruits</option>
+                                                <option value="Dairy Products">Dairy Products</option>
+                                                <option value="Livestock Feed">Livestock Feed</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="description"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Description
+                                                *</label>
+                                            <textarea id="description" name="description" rows="3" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="Describe the product features, benefits, and usage..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing & Units -->
+                                <div class="border-b border-gray-200 pb-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Pricing & Units</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label for="price"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
+                                            <input type="number" id="price" name="price" step="0.01" min="0" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="0.00">
+                                        </div>
+
+                                        <div>
+                                            <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit
+                                                *</label>
+                                            <select id="unit" name="unit" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                                <option value="">Select Unit</option>
+                                                <option value="kg">Kilogram (kg)</option>
+                                                <option value="g">Gram (g)</option>
+                                                <option value="liter">Liter</option>
+                                                <option value="ml">Milliliter (ml)</option>
+                                                <option value="piece">Piece</option>
+                                                <option value="packet">Packet</option>
+                                                <option value="bag">Bag</option>
+                                                <option value="quintal">Quintal</option>
+                                                <option value="ton">Ton</option>
+                                                <option value="dozen">Dozen</option>
+                                                <option value="meter">Meter</option>
+                                                <option value="feet">Feet</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="gst" class="block text-sm font-medium text-gray-700 mb-2">GST
+                                                Rate (%)</label>
+                                            <input type="number" id="gst" name="gst" step="0.01" min="0" max="100"
+                                                value="18"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Inventory -->
+                                <div class="border-b border-gray-200 pb-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Inventory Management</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label for="quantityInStock"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Current
+                                                Stock</label>
+                                            <input type="number" id="quantityInStock" name="quantityInStock" min="0"
+                                                value="0"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="minimumStockLevel"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Minimum Stock
+                                                Level</label>
+                                            <input type="number" id="minimumStockLevel" name="minimumStockLevel" min="0"
+                                                value="10"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="sku" class="block text-sm font-medium text-gray-700 mb-2">SKU
+                                                (Optional)</label>
+                                            <input type="text" id="sku" name="sku"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="Auto-generated if empty">
+                                            <p class="text-xs text-gray-500 mt-1">Leave empty for auto-generation</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Codes -->
+                                <div class="border-b border-gray-200 pb-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Product Codes</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                                        <div>
+                                            <label for="hsn" class="block text-sm font-medium text-gray-700 mb-2">HSN
+                                                Code *</label>
+                                            <input type="text" id="hsn" name="hsn" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="e.g. 1001">
+                                            <p class="text-xs text-gray-500 mt-1">Harmonized System of Nomenclature code
+                                                for tax purposes</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Supplier Information -->
+                                <div class="pb-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Supplier Information</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="supplierName"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Supplier Name
+                                                *</label>
+                                            <input type="text" id="supplierName" name="supplierName" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="Supplier company or person name">
+                                        </div>
+
+                                        <div>
+                                            <label for="supplierContact"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Supplier Contact
+                                                *</label>
+                                            <input type="text" id="supplierContact" name="supplierContact" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="Phone number">
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="supplierEmail"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Supplier Email
+                                                (Optional)</label>
+                                            <input type="email" id="supplierEmail" name="supplierEmail"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                placeholder="supplier@email.com">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                                    <a href="/products"
+                                        class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        Cancel
+                                    </a>
+                                    <button type="submit"
+                                        class="px-6 py-2 bg-green-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        <i class="fas fa-save mr-2"></i>
+                                        Add Product
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+            </main>
+
+            <script>
+                // Auto-format price input
+                document.getElementById('price').addEventListener('input', function (e) {
+                    let value = e.target.value;
+                    if (value && !isNaN(value)) {
+                        // Ensure maximum 2 decimal places
+                        e.target.value = parseFloat(value).toFixed(2);
+                    }
+                });
+
+                // Auto-generate SKU based on category and name
+                document.getElementById('category').addEventListener('change', generateSKU);
+                document.getElementById('name').addEventListener('input', generateSKU);
+
+                function generateSKU() {
+                    const category = document.getElementById('category').value;
+                    const name = document.getElementById('name').value;
+                    const skuField = document.getElementById('sku');
+
+                    if (category && name && !skuField.value) {
+                        const categoryCode = category.substring(0, 3).toUpperCase();
+                        const nameCode = name.substring(0, 3).toUpperCase();
+                        const timestamp = Date.now().toString().slice(-4);
+                        skuField.placeholder = `${categoryCode}-${nameCode}-${timestamp}`;
+                    }
+                }
+
+                // Auto-hide error messages after 5 seconds
+                setTimeout(() => {
+                    const alerts = document.querySelectorAll('.bg-red-50');
+                    alerts.forEach(alert => {
+                        alert.style.transition = 'opacity 0.5s';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 500);
+                    });
+                }, 5000);
+            </script>
+
+    </body>
+
+    </html>

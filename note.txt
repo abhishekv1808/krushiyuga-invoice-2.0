@@ -1,0 +1,14 @@
+npx @tailwindcss/cli -i ./views/input.css -o ./public/output.css --watch<%- include('../partials/head.ejs') %>
+
+    <body>
+
+        <%- include('../partials/navbar.ejs') %>
+
+            <main>
+
+            </main>
+
+
+    </body>
+
+    </html>
