@@ -22,6 +22,7 @@ app.set('views', 'views');
 
 app.use(express.static(path.join(rootDir, "public")));
 app.use(express.urlencoded({extended: true}));
+app.use(express.json()); // Add JSON body parser for API requests
 
 // Session configuration
 app.use(session({

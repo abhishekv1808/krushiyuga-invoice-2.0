@@ -49,8 +49,8 @@ const invoiceItemSchema = new mongoose.Schema({
 const invoiceSchema = new mongoose.Schema({
     invoiceNumber: {
         type: String,
-        required: true,
         unique: true
+        // removed required: true since it's auto-generated in pre-save hook
     },
     issueDate: {
         type: Date,

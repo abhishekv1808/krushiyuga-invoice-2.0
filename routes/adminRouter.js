@@ -11,7 +11,9 @@ const {
     deleteProduct,
     getProductDetails,
     getAllProductsAPI,
-    getProductById
+    getProductById,
+    createInvoice,
+    generateInvoicePDF
 } = require('../controllers/adminController');
 const {requireAdminAuth} = require('../controllers/authController');
 
@@ -31,5 +33,9 @@ adminRouter.get('/products/details/:id', requireAdminAuth, getProductDetails);
 // API routes
 adminRouter.get('/api/products', requireAdminAuth, getAllProductsAPI);
 adminRouter.get('/api/products/:id', requireAdminAuth, getProductById);
+
+// Invoice routes
+adminRouter.post('/create-invoice', requireAdminAuth, createInvoice);
+adminRouter.get('/generate-pdf/:invoiceId', requireAdminAuth, generateInvoicePDF);
 
 module.exports = adminRouter;

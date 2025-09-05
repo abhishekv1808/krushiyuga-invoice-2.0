@@ -1,5 +1,8 @@
 const Product = require('../models/Product');
 const Invoice = require('../models/Invoice');
+const PDFGenerator = require('../utils/pdfGenerator');
+const path = require('path');
+const fs = require('fs');
 
 exports.getAdminPortal = (req, res, next) => {
     const loginSuccessMessage = req.session.loginSuccessMessage;
@@ -370,6 +373,194 @@ exports.getProductById = async (req, res, next) => {
     } catch (error) {
         console.error('Error fetching product:', error);
         res.status(500).json({ error: 'Error fetching product' });
+    }
+};
+
+// Create Invoice
+exports.createInvoice = async (req, res, next) => {
+    try {
+        console.log('=== CREATE INVOICE DEBUG INFO ===');
+        console.log('Request headers:', req.headers);
+        console.log('Request method:', req.method);
+        console.log('Request URL:', req.url);
+        console.log('Request body (raw):', req.body);
+        console.log('Request body type:', typeof req.body);
+        console.log('Request body keys:', Object.keys(req.body || {}));
+        console.log('================================');
+        
+        const {
+            clientName,
+            clientEmail,
+            clientPhone,
+            billingAddress,
+            shippingAddress,
+            placeOfSupply,
+            items,
+            notes
+        } = req.body;
+
+        console.log('Extracted data:', { clientName, clientEmail, billingAddress, items }); // Debug log
+
+        // Validate required fields
+        if (!clientName || !clientEmail || !billingAddress || !items || items.length === 0) {
+            console.log('Validation failed:', { 
+                clientName: !!clientName, 
+                clientEmail: !!clientEmail, 
+                billingAddress: !!billingAddress, 
+                items: items ? items.length : 'undefined' 
+            }); // Debug log
+            
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please fill all required fields and add at least one item' 
+            });
+        }
+
+        // Process items and calculate totals
+        const processedItems = [];
+
+        for (let item of items) {
+            console.log('Processing item:', item); // Debug log
+            
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                console.log('Product not found:', item.productId); // Debug log
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Product not found: ${item.productId}` 
+                });
+            }
+
+            const quantity = parseFloat(item.quantity);
+            const rate = parseFloat(item.rate);
+            const gstRate = parseFloat(item.gstRate);
+
+            // Calculate GST-inclusive amounts
+            const totalAmount = quantity * rate;
+            const taxableAmount = totalAmount / (1 + gstRate / 100);
+            const gstAmount = totalAmount - taxableAmount;
+
+            processedItems.push({
+                product: product._id,
+                productName: product.name,
+                description: product.description || '',
+                quantity: quantity,
+                unit: product.unit,
+                rate: rate,
+                amount: Math.round(totalAmount * 100) / 100,
+                gst: gstRate,
+                gstAmount: Math.round(gstAmount * 100) / 100
+            });
+        }
+
+        console.log('Processed items:', processedItems); // Debug log
+
+        // Create invoice with proper structure matching the model
+        const invoice = new Invoice({
+            to: {
+                companyName: clientName,
+                contactPerson: clientName,
+                email: clientEmail,
+                phone: clientPhone || '',
+                address: billingAddress,
+                gstin: '' // Optional client GSTIN
+            },
+            items: processedItems,
+            discount: 0, // No discount for now
+            notes: notes || 'Thank you for the Business',
+            createdBy: req.session.adminId
+        });
+
+        console.log('About to save invoice:', invoice); // Debug log
+        await invoice.save();
+        console.log('Invoice saved successfully:', invoice._id); // Debug log
+
+        res.json({
+            success: true,
+            message: 'Invoice created successfully',
+            invoice: {
+                _id: invoice._id,
+                invoiceNumber: invoice.invoiceNumber,
+                totalAmount: invoice.totalAmount
+            }
+        });
+
+    } catch (error) {
+        console.error('Error creating invoice:', error);
+        console.error('Error stack:', error.stack); // More detailed error log
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error creating invoice. Please try again.' 
+        });
+    }
+};
+
+// Generate PDF for Invoice
+exports.generateInvoicePDF = async (req, res, next) => {
+    try {
+        console.log('PDF generation request for invoice ID:', req.params.invoiceId);
+        
+        const invoiceId = req.params.invoiceId;
+        const invoice = await Invoice.findById(invoiceId).populate('items.product');
+
+        if (!invoice) {
+            console.log('Invoice not found:', invoiceId);
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Invoice not found' 
+            });
+        }
+
+        console.log('Invoice found:', invoice.invoiceNumber);
+
+        // Create invoices directory if it doesn't exist
+        const invoicesDir = path.join(process.cwd(), 'public', 'invoices');
+        if (!fs.existsSync(invoicesDir)) {
+            fs.mkdirSync(invoicesDir, { recursive: true });
+            console.log('Created invoices directory');
+        }
+
+        const filename = `${invoice.invoiceNumber}.pdf`;
+        const outputPath = path.join(invoicesDir, filename);
+
+        console.log('Generating PDF at:', outputPath);
+
+        // The invoice object already has the correct structure for the PDF generator
+        // Just pass it directly to the PDF generator
+        await PDFGenerator.generateInvoicePDF(invoice, outputPath);
+
+        console.log('PDF generated successfully');
+
+        // Set headers for PDF download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Send PDF file
+        const fileStream = fs.createReadStream(outputPath);
+        fileStream.pipe(res);
+
+        // Clean up file after sending (optional)
+        fileStream.on('end', () => {
+            console.log('PDF sent to client successfully');
+            // Optionally delete the file after sending
+            // fs.unlinkSync(outputPath);
+        });
+
+        fileStream.on('error', (streamError) => {
+            console.error('Error streaming PDF:', streamError);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Error streaming PDF file' 
+            });
+        });
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error generating PDF. Please try again.' 
+        });
     }
 };
 

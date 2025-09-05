@@ -1,329 +1,302 @@
 <%- include('../partials/head.ejs') %>
+    <style>
+        .invoice-preview {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 210mm;
+            background: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .invoice-border {
+            border: 1px solid #d1d5db;
+        }
+
+        .amazon-table th,
+        .amazon-table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .amazon-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .amazon-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 9px;
+        }
+
+        .totals-table {
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        .totals-table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+        }
+
+        .totals-table .highlight-row {
+            background-color: #f9fafb;
+            font-weight: bold;
+        }
+    </style>
 
     <body>
 
         <%- include('../partials/navbar.ejs') %>
 
-            <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Header -->
-                <div class="mb-8 animate-slide-up">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Create New Invoice</h1>
-                            <p class="text-gray-600">Fill in the details below to generate a professional invoice.</p>
-                        </div>
-                        <div class="mt-4 sm:mt-0 flex space-x-3">
-                            <button
-                                class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors duration-200 shadow-sm">
-                                Save as Draft
-                            </button>
-                            <button
-                                class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors duration-200">
-                                Preview
-                            </button>
-                        </div>
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Header Controls -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Create Tax Invoice</h1>
+                        <p class="text-gray-600 text-sm">Generate professional GST compliant invoice</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" id="generateInvoiceBtn"
+                            class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+                            Generate Invoice PDF
+                        </button>
                     </div>
                 </div>
 
-                <!-- Form -->
-                <form id="invoiceForm" class="space-y-8 animate-scale-in">
-                    <!-- Invoice Details Section -->
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            <div
-                                class="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                            </div>
-                            Invoice Details
-                        </h2>
+                <!-- Invoice Preview Container -->
+                <div class="invoice-preview mx-auto p-8 bg-white">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label>
-                                <input type="text" id="invoiceNumber" value="Auto-generated"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50"
-                                    readonly>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Issue Date *</label>
-                                <input type="date" id="issueDate" name="issueDate"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    required>
+                    <!-- Header Section -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-800 mb-1">TAX INVOICE</h1>
+                            <p class="text-xs text-gray-600">ORIGINAL FOR RECIPIENT</p>
+                        </div>
+                        <div class="flex items-center">
+                            <!-- Logo placeholder or company name -->
+                            <div class="text-right">
+                                <img src="/images/krushiyuga-logo.png" alt="Krushiyuga Logo" class="h-16 w-auto mb-2"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="text-lg font-bold text-gray-800 hidden">KRUSHIYUGA</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Business Info / Client Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- Krushiyuga Business Info (Display Only) -->
-                        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                                <div
-                                    class="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                        </path>
-                                    </svg>
-                                </div>
-                                From (Business Details)
-                            </h2>
-
-                            <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                                <div>
-                                    <h3 class="text-lg font-bold text-green-700">Krushiyuga</h3>
-                                    <p class="text-sm text-gray-600 font-medium">GSTIN: 22AAAAA0000A1Z5</p>
-                                    <p class="text-sm text-gray-700 mt-1">Agricultural Solutions & Services</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-700 leading-relaxed">
-                                        No. 39 & 1479, DRLS Plaza Union Bank Building<br>
-                                        Tumkur Road, Vidya Nagar, T. Dasarahalli<br>
-                                        Bengaluru 560057
-                                    </p>
-                                </div>
-                                <div class="flex flex-col space-y-1">
-                                    <p class="text-sm text-gray-700">
-                                        <i class="fas fa-phone text-green-600 mr-2"></i>
-                                        <span class="font-medium">Mobile:</span> 9876543210
-                                    </p>
-                                    <p class="text-sm text-gray-700">
-                                        <i class="fas fa-envelope text-green-600 mr-2"></i>
-                                        <span class="font-medium">Email:</span> info@krushiyuga.com
-                                    </p>
-                                </div>
+                    <!-- Company and Invoice Details -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+                        <!-- Company Details (Left) -->
+                        <div>
+                            <h2 class="text-base font-bold text-gray-800 mb-2">Krushiyuga</h2>
+                            <div class="text-xs text-gray-700 space-y-1">
+                                <p class="font-medium">GSTIN 22AAAAA0000A1Z5</p>
+                                <p>Agricultural Solutions & Services</p>
+                                <p>No. 39 & 1479, DRLS Plaza Union Bank Building</p>
+                                <p>Tumkur Road, Vidya Nagar, T. Dasarahalli, Bengaluru 560057</p>
+                                <p>Mobile : 9876543210 Email : info@krushiyuga.com</p>
                             </div>
                         </div>
 
-                        <!-- Bill To (Client) -->
-                        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                                <div
-                                    class="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                Bill To (Client)
-                            </h2>
-
-                            <div class="space-y-4">
+                        <!-- Invoice Details (Right) -->
+                        <div class="text-right">
+                            <div class="grid grid-cols-2 gap-4 text-xs">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Company *</label>
-                                    <input type="text" id="toCompany" name="toCompany" placeholder="Client Company Name"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                        required>
+                                    <label class="block font-medium text-gray-700 mb-1">Invoice #:</label>
+                                    <input type="text" id="invoiceNumber" value="Auto-generated"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
-                                    <input type="text" id="toContact" name="toContact" placeholder="Client Name"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Client GSTIN</label>
-                                    <input type="text" id="toGstin" name="toGstin" placeholder="22AAAAA0000A1Z5"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                    <input type="email" id="toEmail" name="toEmail" placeholder="client@company.com"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                        required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                                    <input type="tel" id="toPhone" name="toPhone" placeholder="+91 9876543210"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
-                                    <textarea id="toAddress" name="toAddress" rows="3"
-                                        placeholder="Client company address..."
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                                        required></textarea>
+                                    <label class="block font-medium text-gray-700 mb-1">Invoice Date:</label>
+                                    <input type="date" id="issueDate" name="issueDate"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs" required>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Items Section -->
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-                                <div
-                                    class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                                        </path>
-                                    </svg>
+                    <!-- Customer Details Section -->
+                    <div class="mb-6">
+                        <div class="grid grid-cols-3 gap-6">
+                            <!-- Customer Details -->
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-800 mb-2">Customer Details:</h3>
+                                <div class="space-y-2">
+                                    <input type="text" id="clientName" name="clientName" placeholder="Customer Name"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs font-medium"
+                                        required>
+                                    <input type="email" id="clientEmail" name="clientEmail"
+                                        placeholder="customer@email.com"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs" required>
+                                    <input type="tel" id="clientPhone" name="clientPhone" placeholder="Phone Number"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
                                 </div>
-                                Invoice Items
-                            </h2>
+                            </div>
+
+                            <!-- Billing Address -->
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-800 mb-2">Billing address:</h3>
+                                <textarea id="billingAddress" name="billingAddress" rows="4"
+                                    placeholder="Enter billing address..."
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs resize-none"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-800 mb-2">Shipping address:</h3>
+                                <textarea id="shippingAddress" name="shippingAddress" rows="4"
+                                    placeholder="Enter shipping address..."
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs resize-none"></textarea>
+                                <label class="flex items-center mt-2 text-xs">
+                                    <input type="checkbox" id="sameAsBilling" class="mr-1 text-xs"> Same as billing
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Place of Supply -->
+                        <div class="mt-4">
+                            <div class="flex items-center space-x-4">
+                                <label class="text-xs font-bold text-gray-800">Place of Supply:</label>
+                                <select id="placeOfSupply" name="placeOfSupply"
+                                    class="px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option value="KARNATAKA">KARNATAKA</option>
+                                    <option value="TAMIL NADU">TAMIL NADU</option>
+                                    <option value="KERALA">KERALA</option>
+                                    <option value="ANDHRA PRADESH">ANDHRA PRADESH</option>
+                                    <option value="TELANGANA">TELANGANA</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Section with Amazon-style Table -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-800">Invoice Items</h3>
                             <button type="button" id="addItemBtn"
-                                class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-xs font-medium transition-colors duration-200">
                                 Add Item
                             </button>
                         </div>
 
-                        <!-- Items Table -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse border border-gray-200">
-                                <thead class="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-64">
-                                            Product</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-48">
-                                            Description</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-24">
-                                            HSN</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-28">
-                                            Quantity</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-24">
-                                            Unit</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-32">
-                                            Rate (₹)</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-24">
-                                            GST%</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 w-36">
-                                            Amount (₹)</th>
-                                        <th
-                                            class="px-3 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-20">
-                                            Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="itemsTableBody" class="bg-white divide-y divide-gray-200">
-                                    <!-- Items will be added dynamically -->
-                                </tbody>
-                            </table>
+                        <!-- Items Table (Amazon Style) -->
+                        <table class="amazon-table mb-4">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3%;">#</th>
+                                    <th style="width: 35%;">Item</th>
+                                    <th style="width: 12%;">Rate/Item</th>
+                                    <th style="width: 8%;">Qty</th>
+                                    <th style="width: 14%;">Taxable Value</th>
+                                    <th style="width: 14%;">Tax Amount</th>
+                                    <th style="width: 10%;">Amount</th>
+                                    <th style="width: 4%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                <!-- Items will be added dynamically -->
+                            </tbody>
+                        </table>
+
+                        <!-- Add first item by default -->
+                        <div id="noItemsMessage" class="text-center py-4 text-xs text-gray-500">
+                            Click "Add Item" to start adding products to your invoice
+                        </div>
+                    </div>
+
+                    <!-- Summary Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+                        <!-- Left Side - Summary -->
+                        <div>
+                            <div class="text-xs space-y-2">
+                                <p><span class="font-medium">Total Items / Qty:</span> <span id="totalItemsQty">0 /
+                                        0</span></p>
+
+                                <div class="mt-4">
+                                    <p class="font-bold mb-2">Total amount (in words):</p>
+                                    <p id="amountInWords" class="text-xs">Zero Rupees Only.</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Totals Section -->
-                        <div class="mt-8 border-t border-gray-200 pt-6">
-                            <div class="flex justify-end">
-                                <div class="w-full max-w-md space-y-4 bg-gray-50 p-6 rounded-lg border">
-                                    <div class="flex justify-between items-center text-base">
-                                        <span class="text-gray-700 font-medium">Subtotal:</span>
-                                        <span id="subtotal" class="font-semibold text-gray-900">₹0.00</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-base">
-                                        <span class="text-gray-700 font-medium">Total GST:</span>
-                                        <span id="gstAmount" class="font-semibold text-green-600">₹0.00</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <label class="text-base text-gray-700 font-medium">Discount (%):</label>
-                                        <div class="flex items-center space-x-3">
-                                            <input type="number" id="discountRate" min="0" max="100" step="0.01"
-                                                placeholder="0"
-                                                class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center">
-                                            <span id="discountAmount"
-                                                class="text-base font-semibold min-w-20 text-red-600">-₹0.00</span>
-                                        </div>
-                                    </div>
-                                    <div class="border-t border-gray-300 pt-4">
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-xl font-bold text-gray-900">Total Amount:</span>
-                                            <span id="totalAmount"
-                                                class="text-2xl font-bold text-indigo-600">₹0.00</span>
-                                        </div>
-                                    </div>
+                        <!-- Right Side - Totals Table -->
+                        <div>
+                            <table class="totals-table w-full ml-auto" style="width: 280px;">
+                                <tr>
+                                    <td class="font-medium">Taxable Amount</td>
+                                    <td class="text-right">Rs. <span id="taxableAmount">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">IGST <span id="gstRateDisplay">18</span>%</td>
+                                    <td class="text-right">Rs. <span id="gstAmount">0.00</span></td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td class="font-bold text-base">Total</td>
+                                    <td class="text-right font-bold text-base">Rs. <span id="totalAmount">0.00</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">Amount Payable:</td>
+                                    <td class="text-right font-medium">Rs. <span id="amountPayable">0.00</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payment and Bank Details -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- UPI Payment -->
+                        <div>
+                            <h3 class="text-xs font-bold text-gray-800 mb-2">Pay using UPI:</h3>
+                            <div class="border border-gray-300 p-2 text-center">
+                                <img src="/images/QR-Code.png" alt="UPI QR Code" class="w-20 h-20 mx-auto"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="text-xs text-gray-500 hidden">QR Code Here</div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Details -->
+                        <div>
+                            <h3 class="text-xs font-bold text-gray-800 mb-2">Bank Details:</h3>
+                            <div class="text-xs space-y-1">
+                                <p><span class="font-medium">Bank:</span> BANK OF BARODA</p>
+                                <p><span class="font-medium">Account No:</span> 33760200000952</p>
+                                <p><span class="font-medium">IFSC:</span> BARB0PEENYA (Fifth character is zero)</p>
+                                <p><span class="font-medium">Branch:</span> PEENYA</p>
+                            </div>
+                        </div>
+
+                        <!-- Authorized Signatory -->
+                        <div>
+                            <div class="text-xs">
+                                <p class="mb-12">For Krushiyuga</p>
+                                <p class="font-medium">Authorized Signatory</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes and Terms -->
+                    <div class="mb-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-800 mb-2">Notes:</h3>
+                                <textarea id="invoiceNotes" name="invoiceNotes" rows="3"
+                                    placeholder="Thank you for the Business"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs resize-none"></textarea>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-800 mb-2">Terms and Conditions:</h3>
+                                <div class="text-xs text-gray-700">
+                                    <p>1. Goods once sold cannot be taken back or exchanged.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Additional Notes -->
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            <div
-                                class="w-8 h-8 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg>
-                            </div>
-                            Additional Information
-                        </h2>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Terms</label>
-                                <select id="paymentTerms"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                    <option value="Net 30">Net 30 days</option>
-                                    <option value="Net 15">Net 15 days</option>
-                                    <option value="Net 7">Net 7 days</option>
-                                    <option value="Due on receipt">Due on receipt</option>
-                                    <option value="Advance Payment">Advance Payment</option>
-                                    <option value="50% Advance">50% Advance</option>
-                                    <option value="Custom">Custom terms</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                                <select id="currency"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                    <option value="INR">INR (₹)</option>
-                                    <option value="USD">USD ($)</option>
-                                    <option value="EUR">EUR (€)</option>
-                                    <option value="GBP">GBP (£)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <option value="INR">INR (₹)</option>
-                        <option value="CAD">CAD (C$)</option>
-                        </select>
-                    </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                        <textarea id="notes" rows="4"
-                            placeholder="Thank you for your business! Payment is due within 30 days of invoice date."
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"></textarea>
-                    </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                        <button type="button"
-                            class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors duration-200">
-                            Save as Draft
-                        </button>
-                        <button type="button"
-                            class="w-full sm:w-auto bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-medium transition-all duration-200">
-                            Preview Invoice
-                        </button>
-                        <button type="submit"
-                            class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                            Create Invoice
-                        </button>
-                    </div>
-                </form>
             </main>
-            </form>
 
             <script>
                 // Product data and invoice functionality
@@ -332,21 +305,30 @@
 
                 // Fetch products when page loads
                 document.addEventListener('DOMContentLoaded', function () {
-                    fetchProducts().then(() => {
-                        // Add first item row after products are loaded
-                        if (products.length > 0) {
-                            console.log('Adding first item row with', products.length, 'products');
-                            addItemRow();
-                        } else {
-                            console.warn('No products available to add to invoice');
-                            showNotification('No products found. Please add products first.', 'warning');
+                    // Set today's date as default
+                    document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+
+                    // Auto-copy billing to shipping address
+                    document.getElementById('sameAsBilling').addEventListener('change', function () {
+                        if (this.checked) {
+                            document.getElementById('shippingAddress').value = document.getElementById('billingAddress').value;
                         }
                     });
+
+                    // Copy billing address when it changes
+                    document.getElementById('billingAddress').addEventListener('input', function () {
+                        if (document.getElementById('sameAsBilling').checked) {
+                            document.getElementById('shippingAddress').value = this.value;
+                        }
+                    });
+
+                    fetchProducts();
                 });
 
                 // Fetch products from API
                 async function fetchProducts() {
                     try {
+                        console.log('Fetching products...'); // Debug log
                         const response = await fetch('/api/products');
 
                         if (!response.ok) {
@@ -354,90 +336,90 @@
                         }
 
                         const data = await response.json();
+                        console.log('Products response:', data); // Debug log
 
                         if (data.success && data.products) {
                             products = data.products;
                             console.log('Products loaded successfully:', products.length);
-                            console.log('Sample product data:', products[0]); // Debug first product
                         } else {
                             throw new Error('Invalid response format');
                         }
                     } catch (error) {
                         console.error('Error fetching products:', error);
                         showNotification('Error loading products. Please refresh the page.', 'error');
-                        products = []; // Ensure products is an array
+                        products = [];
                     }
-                }                // Add item row
+                }
+
+                // Add item row (Amazon style)
                 document.getElementById('addItemBtn').addEventListener('click', function () {
+                    console.log('Add item button clicked, products available:', products.length); // Debug log
                     addItemRow();
                 });
 
                 function addItemRow() {
+                    if (products.length === 0) {
+                        showNotification('Products not loaded yet. Please wait or refresh the page.', 'warning');
+                        return;
+                    }
+
                     itemCounter++;
                     const tbody = document.getElementById('itemsTableBody');
+                    const noItemsMsg = document.getElementById('noItemsMessage');
+
+                    if (noItemsMsg) {
+                        noItemsMsg.style.display = 'none';
+                    }
 
                     const row = document.createElement('tr');
-                    row.classList.add('hover:bg-gray-50', 'transition-colors');
                     row.setAttribute('data-item-id', itemCounter);
 
                     row.innerHTML = `
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <select class="product-select w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-60" 
-                                onchange="populateProductDetails(this, ${itemCounter})">
-                            <option value="">Select Product</option>
-                            ${products.map(product =>
+                        <td style="text-align: center; vertical-align: middle; font-weight: bold;">${itemCounter}</td>
+                        <td>
+                            <select class="product-select w-full px-2 py-1 border border-gray-300 rounded text-xs" 
+                                    onchange="populateProductDetails(this, ${itemCounter})">
+                                <option value="">Select Product</option>
+                                ${products.map(product =>
                         `<option value="${product._id}" 
-                                        data-name="${product.name}"
-                                        data-description="${product.description}"
-                                        data-hsn="${product.hsn || ''}"
-                                        data-unit="${product.unit}"
-                                        data-price="${product.price}"
-                                        data-gst="${product.gst}">
-                                    ${product.name} (₹${product.price})
-                                </option>`
+                                            data-name="${product.name}"
+                                            data-hsn="${product.hsn || ''}"
+                                            data-unit="${product.unit}"
+                                            data-price="${product.price}"
+                                            data-gst="${product.gst}">
+                                        ${product.name}
+                                    </option>`
                     ).join('')}
-                        </select>
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="text" class="item-description w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-44" 
-                               placeholder="Product description" readonly>
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="text" class="item-hsn w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center" 
-                               placeholder="HSN" readonly>
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="number" class="item-quantity w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center font-medium" 
-                               placeholder="1" min="1" step="0.01" onchange="calculateRowTotal(${itemCounter})">
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="text" class="item-unit w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center" 
-                               placeholder="Unit" readonly>
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="number" class="item-rate w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right font-medium" 
-                               placeholder="0.00" step="0.01" onchange="calculateRowTotal(${itemCounter})">
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <input type="number" class="item-gst w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center" 
-                               placeholder="18" step="0.01" readonly>
-                    </td>
-                    <td class="px-3 py-4 border-r border-gray-200">
-                        <div class="text-right">
-                            <span class="item-amount font-semibold text-lg text-indigo-600">₹0.00</span>
-                        </div>
-                    </td>
-                    <td class="px-3 py-4 text-center">
-                        <button type="button" onclick="removeItemRow(${itemCounter})" 
-                                class="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </td>
-                `;
+                            </select>
+                            <div class="product-description text-xs text-gray-600 mt-1"></div>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="item-rate-display">0.00</span>
+                            <input type="hidden" class="item-rate" value="0">
+                        </td>
+                        <td style="text-align: center;">
+                            <input type="number" class="item-quantity w-full px-1 py-1 border border-gray-300 rounded text-xs text-center" 
+                                   value="1" min="1" step="1" onchange="calculateRowTotal(${itemCounter})">
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="taxable-amount">0.00</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="tax-amount">0.00</span> (<span class="gst-rate">18</span>%)
+                        </td>
+                        <td style="text-align: right; font-weight: bold;">
+                            <span class="item-total">0.00</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <button type="button" onclick="removeItemRow(${itemCounter})" 
+                                    class="text-red-600 hover:text-red-800 text-xs px-1 py-1 rounded">
+                                ✕
+                            </button>
+                        </td>
+                    `;
 
                     tbody.appendChild(row);
+                    updateItemNumbers();
                 }
 
                 // Populate product details when product is selected
@@ -446,81 +428,90 @@
                     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
 
                     if (option.value && row) {
-                        console.log('Populating product details for:', option.getAttribute('data-name'));
-                        console.log('Product data:', {
-                            description: option.getAttribute('data-description'),
-                            hsn: option.getAttribute('data-hsn'),
-                            unit: option.getAttribute('data-unit'),
-                            price: option.getAttribute('data-price'),
-                            gst: option.getAttribute('data-gst')
-                        });
+                        const product = products.find(p => p._id === option.value);
 
-                        row.querySelector('.item-description').value = option.getAttribute('data-description') || option.getAttribute('data-name');
-                        row.querySelector('.item-hsn').value = option.getAttribute('data-hsn') || '';
-                        row.querySelector('.item-unit').value = option.getAttribute('data-unit') || '';
-                        row.querySelector('.item-rate').value = option.getAttribute('data-price') || '0';
-                        row.querySelector('.item-gst').value = option.getAttribute('data-gst') || '18';
-                        row.querySelector('.item-quantity').value = '1';
+                        if (product) {
+                            // Show product description
+                            const descDiv = row.querySelector('.product-description');
+                            if (product.description) {
+                                descDiv.textContent = product.description;
+                            } else {
+                                descDiv.textContent = '';
+                            }
 
-                        calculateRowTotal(itemId);
+                            // Set rate and GST
+                            row.querySelector('.item-rate').value = product.price || 0;
+                            row.querySelector('.item-rate-display').textContent = (product.price || 0).toFixed(2);
+                            row.querySelector('.gst-rate').textContent = product.gst || 18;
+
+                            calculateRowTotal(itemId);
+                        }
                     } else if (row) {
                         // Clear fields if no product selected
-                        row.querySelector('.item-description').value = '';
-                        row.querySelector('.item-hsn').value = '';
-                        row.querySelector('.item-unit').value = '';
-                        row.querySelector('.item-rate').value = '';
-                        row.querySelector('.item-gst').value = '';
-                        row.querySelector('.item-quantity').value = '';
-                        row.querySelector('.item-amount').textContent = '₹0.00';
-
-                        calculateTotals();
+                        row.querySelector('.product-description').textContent = '';
+                        row.querySelector('.item-rate').value = 0;
+                        row.querySelector('.item-rate-display').textContent = '0.00';
+                        row.querySelector('.gst-rate').textContent = '18';
+                        row.querySelector('.item-quantity').value = '1';
+                        calculateRowTotal(itemId);
                     }
                 }
 
-                // Calculate row total
+                // Calculate row total (Amazon style)
                 function calculateRowTotal(itemId) {
                     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
                     if (!row) return;
 
                     const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
                     const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-                    const gstRate = parseFloat(row.querySelector('.item-gst').value) || 0;
+                    const gstRate = parseFloat(row.querySelector('.gst-rate').textContent) || 18;
 
-                    const subtotal = quantity * rate;
-                    const gstAmount = subtotal * (gstRate / 100);
-                    const total = subtotal + gstAmount;
+                    // Calculate amounts (GST-inclusive pricing)
+                    const totalAmount = quantity * rate;
+                    const taxableAmount = totalAmount / (1 + gstRate / 100);
+                    const taxAmount = totalAmount - taxableAmount;
 
-                    row.querySelector('.item-amount').textContent = `₹${total.toFixed(2)}`;
+                    // Update display
+                    row.querySelector('.taxable-amount').textContent = taxableAmount.toFixed(2);
+                    row.querySelector('.tax-amount').textContent = taxAmount.toFixed(2);
+                    row.querySelector('.item-total').textContent = totalAmount.toFixed(2);
 
                     calculateTotals();
                 }
 
                 // Calculate overall totals
                 function calculateTotals() {
-                    let subtotal = 0;
-                    let totalGst = 0;
+                    let totalTaxableAmount = 0;
+                    let totalTaxAmount = 0;
+                    let totalAmount = 0;
+                    let totalItems = 0;
+                    let totalQty = 0;
 
                     const rows = document.querySelectorAll('#itemsTableBody tr');
                     rows.forEach(row => {
                         const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
-                        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-                        const gstRate = parseFloat(row.querySelector('.item-gst').value) || 0;
+                        const taxableAmount = parseFloat(row.querySelector('.taxable-amount').textContent) || 0;
+                        const taxAmount = parseFloat(row.querySelector('.tax-amount').textContent) || 0;
+                        const itemTotal = parseFloat(row.querySelector('.item-total').textContent) || 0;
 
-                        const itemSubtotal = quantity * rate;
-                        const itemGst = itemSubtotal * (gstRate / 100);
-
-                        subtotal += itemSubtotal;
-                        totalGst += itemGst;
+                        if (quantity > 0) {
+                            totalItems++;
+                            totalQty += quantity;
+                            totalTaxableAmount += taxableAmount;
+                            totalTaxAmount += taxAmount;
+                            totalAmount += itemTotal;
+                        }
                     });
 
-                    const discountRate = parseFloat(document.getElementById('discountRate').value) || 0;
-                    const discountAmount = subtotal * (discountRate / 100);
-                    const finalTotal = subtotal + totalGst - discountAmount;
+                    // Update summary displays
+                    document.getElementById('totalItemsQty').textContent = `${totalItems} / ${totalQty}`;
+                    document.getElementById('taxableAmount').textContent = totalTaxableAmount.toFixed(2);
+                    document.getElementById('gstAmount').textContent = totalTaxAmount.toFixed(2);
+                    document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+                    document.getElementById('amountPayable').textContent = totalAmount.toFixed(2);
 
-                    document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-                    document.getElementById('gstAmount').textContent = `₹${totalGst.toFixed(2)}`;
-                    document.getElementById('discountAmount').textContent = `-₹${discountAmount.toFixed(2)}`;
-                    document.getElementById('totalAmount').textContent = `₹${finalTotal.toFixed(2)}`;
+                    // Update amount in words
+                    document.getElementById('amountInWords').textContent = numberToWords(totalAmount) + ' Only.';
                 }
 
                 // Remove item row
@@ -528,28 +519,277 @@
                     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
                     if (row) {
                         row.remove();
+                        updateItemNumbers();
                         calculateTotals();
+
+                        // Show no items message if table is empty
+                        const tbody = document.getElementById('itemsTableBody');
+                        if (tbody.children.length === 0) {
+                            document.getElementById('noItemsMessage').style.display = 'block';
+                        }
                     }
                 }
 
-                // Update totals when discount changes
-                document.getElementById('discountRate').addEventListener('input', calculateTotals);
+                // Update item numbers after deletion
+                function updateItemNumbers() {
+                    const rows = document.querySelectorAll('#itemsTableBody tr');
+                    rows.forEach((row, index) => {
+                        row.children[0].textContent = index + 1;
+                    });
+                }
 
-                // Show notification
+                // Simple number to words conversion
+                function numberToWords(num) {
+                    if (num === 0) return 'Zero';
+
+                    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+                    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+                    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+                    function convertHundreds(n) {
+                        let result = '';
+                        if (n >= 100) {
+                            result += ones[Math.floor(n / 100)] + ' Hundred ';
+                            n %= 100;
+                        }
+                        if (n >= 20) {
+                            result += tens[Math.floor(n / 10)] + ' ';
+                            n %= 10;
+                        } else if (n >= 10) {
+                            result += teens[n - 10] + ' ';
+                            return result;
+                        }
+                        if (n > 0) {
+                            result += ones[n] + ' ';
+                        }
+                        return result;
+                    }
+
+                    const [rupees, paisa] = num.toFixed(2).split('.');
+                    let result = '';
+                    const rupeesNum = parseInt(rupees);
+
+                    if (rupeesNum >= 10000000) {
+                        result += convertHundreds(Math.floor(rupeesNum / 10000000)) + 'Crore ';
+                        const remainder = rupeesNum % 10000000;
+                        if (remainder >= 100000) {
+                            result += convertHundreds(Math.floor(remainder / 100000)) + 'Lakh ';
+                            const thousand = remainder % 100000;
+                            if (thousand >= 1000) {
+                                result += convertHundreds(Math.floor(thousand / 1000)) + 'Thousand ';
+                                const hundred = thousand % 1000;
+                                if (hundred > 0) {
+                                    result += convertHundreds(hundred);
+                                }
+                            }
+                        }
+                    } else if (rupeesNum >= 100000) {
+                        result += convertHundreds(Math.floor(rupeesNum / 100000)) + 'Lakh ';
+                        const remainder = rupeesNum % 100000;
+                        if (remainder >= 1000) {
+                            result += convertHundreds(Math.floor(remainder / 1000)) + 'Thousand ';
+                            const hundred = remainder % 1000;
+                            if (hundred > 0) {
+                                result += convertHundreds(hundred);
+                            }
+                        }
+                    } else if (rupeesNum >= 1000) {
+                        result += convertHundreds(Math.floor(rupeesNum / 1000)) + 'Thousand ';
+                        const hundred = rupeesNum % 1000;
+                        if (hundred > 0) {
+                            result += convertHundreds(hundred);
+                        }
+                    } else {
+                        result += convertHundreds(rupeesNum);
+                    }
+
+                    if (result) result += 'Rupees';
+
+                    const paisaNum = parseInt(paisa);
+                    if (paisaNum > 0) {
+                        if (result) result += ' and ';
+                        result += convertHundreds(paisaNum) + 'Paisa';
+                    }
+
+                    return result.trim();
+                }
+
+                // Notification function
                 function showNotification(message, type = 'info') {
-                    // Create notification element
-                    const notification = document.createElement('div');
-                    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                    // Create toast notification
+                    const toast = document.createElement('div');
+                    toast.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 transform transition-all duration-300 ${type === 'success' ? 'bg-green-500' :
+                        type === 'error' ? 'bg-red-500' :
+                            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
                         }`;
-                    notification.textContent = message;
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
 
-                    document.body.appendChild(notification);
-
+                    // Auto remove after 3 seconds
                     setTimeout(() => {
-                        notification.remove();
+                        toast.remove();
                     }, 3000);
                 }
+
+                // Validate form data
+                function validateForm() {
+                    const clientName = document.getElementById('clientName').value.trim();
+                    const clientEmail = document.getElementById('clientEmail').value.trim();
+                    const billingAddress = document.getElementById('billingAddress').value.trim();
+                    const tableBody = document.getElementById('itemsTableBody');
+                    const rows = tableBody.querySelectorAll('tr');
+
+                    if (!clientName) {
+                        showNotification('Please enter customer name', 'error');
+                        return false;
+                    }
+
+                    if (!clientEmail) {
+                        showNotification('Please enter customer email', 'error');
+                        return false;
+                    }
+
+                    if (!billingAddress) {
+                        showNotification('Please enter billing address', 'error');
+                        return false;
+                    }
+
+                    if (rows.length === 0) {
+                        showNotification('Please add at least one item', 'error');
+                        return false;
+                    }
+
+                    // Check if all rows have products selected
+                    for (let row of rows) {
+                        const productSelect = row.querySelector('.product-select');
+                        const quantity = row.querySelector('.item-quantity').value;
+
+                        if (!productSelect.value) {
+                            showNotification('Please select a product for all items', 'error');
+                            return false;
+                        }
+
+                        if (!quantity || quantity <= 0) {
+                            showNotification('Please enter valid quantity for all items', 'error');
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                // Collect form data
+                function collectFormData() {
+                    const formData = {
+                        clientName: document.getElementById('clientName').value.trim(),
+                        clientEmail: document.getElementById('clientEmail').value.trim(),
+                        clientPhone: document.getElementById('clientPhone').value.trim(),
+                        billingAddress: document.getElementById('billingAddress').value.trim(),
+                        shippingAddress: document.getElementById('shippingAddress').value.trim() || document.getElementById('billingAddress').value.trim(),
+                        placeOfSupply: document.getElementById('placeOfSupply').value,
+                        notes: document.getElementById('invoiceNotes').value.trim(),
+                        items: []
+                    };
+
+                    // Collect items data
+                    const rows = document.querySelectorAll('#itemsTableBody tr');
+                    rows.forEach(row => {
+                        const productSelect = row.querySelector('.product-select');
+                        const quantity = row.querySelector('.item-quantity').value;
+                        const rate = row.querySelector('.item-rate').value;
+                        const gstRate = row.querySelector('.gst-rate').textContent;
+
+                        if (productSelect.value && quantity && rate) {
+                            formData.items.push({
+                                productId: productSelect.value,
+                                quantity: parseFloat(quantity),
+                                rate: parseFloat(rate),
+                                gstRate: parseFloat(gstRate)
+                            });
+                        }
+                    });
+
+                    return formData;
+                }
+
+                // Generate Invoice PDF function (combines save + PDF generation)
+                document.getElementById('generateInvoiceBtn').addEventListener('click', async function () {
+                    console.log('Generate Invoice button clicked'); // Debug log
+
+                    if (!validateForm()) {
+                        console.log('Form validation failed'); // Debug log
+                        return;
+                    }
+
+                    const formData = collectFormData();
+                    console.log('Form data collected:', formData); // Debug log
+                    console.log('Form data as JSON:', JSON.stringify(formData)); // Additional debug
+
+                    const generateBtn = this;
+
+                    // Disable button and show loading
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Creating Invoice...';
+
+                    try {
+                        console.log('Sending fetch request to /create-invoice'); // Debug log
+
+                        // Step 1: Create and save the invoice
+                        const response = await fetch('/create-invoice', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(formData)
+                        });
+
+                        console.log('Fetch request sent, response status:', response.status); // Debug log
+                        console.log('Response headers:', Object.fromEntries(response.headers)); // Debug log
+
+                        const result = await response.json();
+                        console.log('Response result:', result); // Debug log
+
+                        if (result.success) {
+                            showNotification('Invoice created successfully!', 'success');
+
+                            // Update button text for PDF generation
+                            generateBtn.textContent = 'Generating PDF...';
+
+                            // Step 2: Generate and download PDF
+                            setTimeout(() => {
+                                const link = document.createElement('a');
+                                link.href = `/generate-pdf/${result.invoice._id}`;
+                                link.download = `${result.invoice.invoiceNumber}.pdf`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+
+                                showNotification('PDF downloaded successfully!', 'success');
+
+                                // Optionally reset form or redirect
+                                setTimeout(() => {
+                                    if (confirm('Invoice generated successfully! Do you want to create another invoice?')) {
+                                        window.location.reload();
+                                    } else {
+                                        window.location.href = '/admin-portal';
+                                    }
+                                }, 1000);
+                            }, 500);
+
+                        } else {
+                            showNotification(result.message || 'Error creating invoice', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showNotification('Network error. Please try again.', 'error');
+                    } finally {
+                        // Re-enable button
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = 'Generate Invoice PDF';
+                    }
+                });
             </script>
+
     </body>
 
     </html>
