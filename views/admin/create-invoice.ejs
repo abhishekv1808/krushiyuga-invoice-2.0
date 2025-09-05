@@ -347,7 +347,7 @@
                 // Fetch products from API
                 async function fetchProducts() {
                     try {
-                        const response = await fetch('/admin/api/products');
+                        const response = await fetch('/api/products');
                         
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -366,9 +366,7 @@
                         showNotification('Error loading products. Please refresh the page.', 'error');
                         products = []; // Ensure products is an array
                     }
-                }
-
-                // Add item row
+                }                // Add item row
                 document.getElementById('addItemBtn').addEventListener('click', function () {
                     addItemRow();
                 });
