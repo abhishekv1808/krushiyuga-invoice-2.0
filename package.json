@@ -3,6 +3,7 @@
     "@tailwindcss/cli": "^4.1.12",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
+    "cloudinary": "^2.7.0",
     "connect-mongodb-session": "^5.0.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
@@ -12,6 +13,7 @@
     "mongoose": "^8.18.0",
     "nodemon": "^3.1.10",
     "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.1.12"
   },
   "name": "practise-15",

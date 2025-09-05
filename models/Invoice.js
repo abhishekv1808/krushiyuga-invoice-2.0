@@ -58,6 +58,16 @@ const invoiceSchema = new mongoose.Schema({
         default: Date.now
     },
     
+    // PDF Storage URLs
+    pdfUrl: {
+        type: String, // Cloudinary URL
+        default: null
+    },
+    localPdfPath: {
+        type: String, // Local file path (backup)
+        default: null
+    },
+    
     // Business Information (Krushiyuga - always same)
     from: {
         companyName: {
@@ -175,24 +185,25 @@ const invoiceSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Auto-generate invoice number
+// Auto-generate invoice number with KRU format
 invoiceSchema.pre('save', async function(next) {
     if (!this.invoiceNumber) {
         const year = new Date().getFullYear();
-        const month = String(new Date().getMonth() + 1).padStart(2, '0');
         
-        // Find the last invoice for this year and month
+        // Find the last invoice for this year with KRU prefix
         const lastInvoice = await this.constructor.findOne({
-            invoiceNumber: { $regex: `^INV-${year}${month}-` }
+            invoiceNumber: { $regex: `^KRU${year}` }
         }).sort({ invoiceNumber: -1 });
         
         let sequence = 1;
         if (lastInvoice) {
-            const lastSequence = parseInt(lastInvoice.invoiceNumber.split('-')[2]);
+            // Extract sequence number from KRU20250001 format
+            const lastSequence = parseInt(lastInvoice.invoiceNumber.substring(7)); // Skip "KRU2025"
             sequence = lastSequence + 1;
         }
         
-        this.invoiceNumber = `INV-${year}${month}-${String(sequence).padStart(4, '0')}`;
+        // Format: KRU + YYYY + 4-digit sequence (KRU20250001)
+        this.invoiceNumber = `KRU${year}${String(sequence).padStart(4, '0')}`;
     }
     next();
 });

@@ -1,10 +1,11 @@
 const Product = require('../models/Product');
 const Invoice = require('../models/Invoice');
 const PDFGenerator = require('../utils/pdfGenerator');
+const cloudinary = require('../utils/cloudinaryConfig');
 const path = require('path');
 const fs = require('fs');
 
-exports.getAdminPortal = (req, res, next) => {
+exports.getAdminPortal = async (req, res, next) => {
     const loginSuccessMessage = req.session.loginSuccessMessage;
     const errorMessage = req.session.errorMessage;
     const successMessage = req.session.successMessage;
@@ -13,14 +14,55 @@ exports.getAdminPortal = (req, res, next) => {
     req.session.loginSuccessMessage = null;
     req.session.errorMessage = null;
     req.session.successMessage = null;
-    
-    res.render('../views/admin/admin-portal.ejs', {
-        pageTitle: "Admin Portal | krushiyuga",
-        adminEmail: req.session.adminEmail,
-        loginSuccessMessage,
-        errorMessage,
-        successMessage
-    });
+
+    try {
+        // Get recent invoices for dashboard
+        const recentInvoices = await Invoice.find()
+            .populate('items.product', 'name')
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .lean();
+
+        // Calculate dashboard statistics
+        const totalInvoices = await Invoice.countDocuments();
+        const totalRevenue = await Invoice.aggregate([
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        ]);
+        const monthlyInvoices = await Invoice.countDocuments({
+            createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
+        });
+
+        const dashboardStats = {
+            totalInvoices,
+            totalRevenue: totalRevenue[0]?.total || 0,
+            monthlyInvoices,
+            recentInvoices
+        };
+
+        res.render('../views/admin/admin-portal.ejs', {
+            pageTitle: "Admin Portal | krushiyuga",
+            adminEmail: req.session.adminEmail,
+            loginSuccessMessage,
+            errorMessage,
+            successMessage,
+            dashboardStats
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.render('../views/admin/admin-portal.ejs', {
+            pageTitle: "Admin Portal | krushiyuga",
+            adminEmail: req.session.adminEmail,
+            loginSuccessMessage,
+            errorMessage: 'Error loading dashboard data',
+            successMessage,
+            dashboardStats: {
+                totalInvoices: 0,
+                totalRevenue: 0,
+                monthlyInvoices: 0,
+                recentInvoices: []
+            }
+        });
+    }
 };
 
 exports.getCreateInvoice = async (req, res, next) => {
@@ -525,11 +567,31 @@ exports.generateInvoicePDF = async (req, res, next) => {
 
         console.log('Generating PDF at:', outputPath);
 
-        // The invoice object already has the correct structure for the PDF generator
-        // Just pass it directly to the PDF generator
+        // Generate PDF
         await PDFGenerator.generateInvoicePDF(invoice, outputPath);
-
         console.log('PDF generated successfully');
+
+        // Upload to Cloudinary with public access
+        console.log('Uploading PDF to Cloudinary...');
+        const cloudinaryResponse = await cloudinary.uploader.upload(outputPath, {
+            resource_type: 'raw',
+            folder: 'krushiyuga-invoices',
+            public_id: invoice.invoiceNumber,
+            use_filename: true,
+            unique_filename: false,
+            access_mode: 'public',
+            type: 'upload'
+        });
+
+        console.log('PDF uploaded to Cloudinary:', cloudinaryResponse.secure_url);
+
+        // Update invoice with Cloudinary URL
+        await Invoice.findByIdAndUpdate(invoiceId, {
+            pdfUrl: cloudinaryResponse.secure_url,
+            localPdfPath: outputPath
+        });
+
+        console.log('Invoice updated with PDF URLs');
 
         // Set headers for PDF download
         res.setHeader('Content-Type', 'application/pdf');
@@ -539,10 +601,10 @@ exports.generateInvoicePDF = async (req, res, next) => {
         const fileStream = fs.createReadStream(outputPath);
         fileStream.pipe(res);
 
-        // Clean up file after sending (optional)
+        // Clean up local file after sending (optional - keep for backup)
         fileStream.on('end', () => {
             console.log('PDF sent to client successfully');
-            // Optionally delete the file after sending
+            // Optionally delete the local file after sending
             // fs.unlinkSync(outputPath);
         });
 
@@ -560,6 +622,180 @@ exports.generateInvoicePDF = async (req, res, next) => {
         res.status(500).json({ 
             success: false, 
             message: 'Error generating PDF. Please try again.' 
+        });
+    }
+};
+
+// Get all invoices for CRM view
+exports.getAllInvoices = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        // Get invoices with pagination
+        const invoices = await Invoice.find()
+            .populate('items.product', 'name')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        const totalInvoices = await Invoice.countDocuments();
+        const totalPages = Math.ceil(totalInvoices / limit);
+
+        res.render('../views/admin/invoices.ejs', {
+            pageTitle: "All Invoices | krushiyuga",
+            adminEmail: req.session.adminEmail,
+            invoices,
+            currentPage: page,
+            totalPages,
+            totalInvoices,
+            errorMessage: req.session.errorMessage,
+            successMessage: req.session.successMessage
+        });
+
+        // Clear messages
+        req.session.errorMessage = null;
+        req.session.successMessage = null;
+
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        req.session.errorMessage = 'Error loading invoices';
+        res.redirect('/admin-portal');
+    }
+};
+
+// Download invoice PDF from Cloudinary
+exports.downloadInvoicePDF = async (req, res, next) => {
+    try {
+        const invoiceId = req.params.invoiceId;
+        const invoice = await Invoice.findById(invoiceId);
+
+        if (!invoice) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Invoice not found' 
+            });
+        }
+
+        // Try to serve local file first
+        if (invoice.localPdfPath && fs.existsSync(invoice.localPdfPath)) {
+            console.log('Serving PDF from local file:', invoice.localPdfPath);
+            
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${invoice.invoiceNumber}.pdf"`);
+            
+            // Stream the file
+            const fileStream = fs.createReadStream(invoice.localPdfPath);
+            fileStream.pipe(res);
+            return;
+        }
+
+        // Fallback to Cloudinary URL if local file doesn't exist
+        if (invoice.pdfUrl) {
+            console.log('Redirecting to Cloudinary URL:', invoice.pdfUrl);
+            return res.redirect(invoice.pdfUrl);
+        }
+
+        return res.status(404).json({ 
+            success: false, 
+            message: 'PDF not available for this invoice' 
+        });
+
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error downloading PDF' 
+        });
+    }
+};
+
+// View Invoice Preview (HTML version)
+exports.viewInvoicePreview = async (req, res, next) => {
+    try {
+        const invoiceId = req.params.invoiceId;
+        const invoice = await Invoice.findById(invoiceId).populate('items.product', 'name');
+
+        if (!invoice) {
+            req.session.errorMessage = 'Invoice not found';
+            return res.redirect('/admin/invoices');
+        }
+
+        res.render('../views/admin/invoice-preview.ejs', {
+            pageTitle: `Invoice Preview - ${invoice.invoiceNumber} | krushiyuga`,
+            adminEmail: req.session.adminEmail,
+            invoice,
+            errorMessage: req.session.errorMessage,
+            successMessage: req.session.successMessage
+        });
+
+        // Clear messages
+        req.session.errorMessage = null;
+        req.session.successMessage = null;
+
+    } catch (error) {
+        console.error('Error viewing invoice preview:', error);
+        req.session.errorMessage = 'Error loading invoice preview';
+        res.redirect('/admin/invoices');
+    }
+};
+
+// Delete Invoice
+exports.deleteInvoice = async (req, res) => {
+    try {
+        const invoiceId = req.params.invoiceId;
+        const invoice = await Invoice.findById(invoiceId);
+
+        if (!invoice) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Invoice not found' 
+            });
+        }
+
+        // Delete PDF file from local storage if exists
+        if (invoice.localPdfPath) {
+            const fullPath = path.join(__dirname, '..', invoice.localPdfPath);
+            try {
+                if (fs.existsSync(fullPath)) {
+                    fs.unlinkSync(fullPath);
+                    console.log('Local PDF file deleted:', fullPath);
+                }
+            } catch (fileError) {
+                console.error('Error deleting local PDF file:', fileError);
+            }
+        }
+
+        // Delete PDF from Cloudinary if exists
+        if (invoice.pdfUrl) {
+            try {
+                // Extract public_id from the Cloudinary URL
+                const urlParts = invoice.pdfUrl.split('/');
+                const fileName = urlParts[urlParts.length - 1];
+                const publicId = fileName.split('.')[0];
+                
+                await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+                console.log('Cloudinary PDF deleted:', publicId);
+            } catch (cloudinaryError) {
+                console.error('Error deleting Cloudinary PDF:', cloudinaryError);
+            }
+        }
+
+        // Delete the invoice from database
+        await Invoice.findByIdAndDelete(invoiceId);
+
+        res.json({ 
+            success: true, 
+            message: `Invoice ${invoice.invoiceNumber} deleted successfully` 
+        });
+
+    } catch (error) {
+        console.error('Error deleting invoice:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error deleting invoice' 
         });
     }
 };
