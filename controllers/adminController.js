@@ -330,7 +330,7 @@ exports.getProductDetails = async (req, res, next) => {
 exports.getAllProductsAPI = async (req, res, next) => {
     try {
         const products = await Product.find({ isActive: true })
-            .select('_id name description hsnCode unit sellingPrice gstRate quantityInStock')
+            .select('_id name description hsn unit price gst quantityInStock')
             .sort({ name: 1 });
         
         res.json({

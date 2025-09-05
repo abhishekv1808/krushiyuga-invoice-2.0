@@ -348,16 +348,17 @@
                 async function fetchProducts() {
                     try {
                         const response = await fetch('/api/products');
-                        
+
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
-                        
+
                         const data = await response.json();
-                        
+
                         if (data.success && data.products) {
                             products = data.products;
                             console.log('Products loaded successfully:', products.length);
+                            console.log('Sample product data:', products[0]); // Debug first product
                         } else {
                             throw new Error('Invalid response format');
                         }
@@ -388,11 +389,11 @@
                         `<option value="${product._id}" 
                                         data-name="${product.name}"
                                         data-description="${product.description}"
-                                        data-hsn="${product.hsnCode || ''}"
+                                        data-hsn="${product.hsn || ''}"
                                         data-unit="${product.unit}"
-                                        data-price="${product.sellingPrice}"
-                                        data-gst="${product.gstRate}">
-                                    ${product.name} (₹${product.sellingPrice})
+                                        data-price="${product.price}"
+                                        data-gst="${product.gst}">
+                                    ${product.name} (₹${product.price})
                                 </option>`
                     ).join('')}
                         </select>
@@ -443,6 +444,15 @@
                     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
 
                     if (option.value && row) {
+                        console.log('Populating product details for:', option.getAttribute('data-name'));
+                        console.log('Product data:', {
+                            description: option.getAttribute('data-description'),
+                            hsn: option.getAttribute('data-hsn'),
+                            unit: option.getAttribute('data-unit'),
+                            price: option.getAttribute('data-price'),
+                            gst: option.getAttribute('data-gst')
+                        });
+
                         row.querySelector('.item-description').value = option.getAttribute('data-description') || option.getAttribute('data-name');
                         row.querySelector('.item-hsn').value = option.getAttribute('data-hsn') || '';
                         row.querySelector('.item-unit').value = option.getAttribute('data-unit') || '';
