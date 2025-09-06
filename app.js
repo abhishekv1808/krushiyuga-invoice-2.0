@@ -43,6 +43,11 @@ app.use(userRouter);
 app.use(adminRouter);
 app.use(authRouter);
 
+// Admin-only system - redirect root to admin login
+app.get('/', (req, res) => {
+    res.redirect('/auth/admin/login');
+});
+
 const port = process.env.PORT || 3000;
 
 mongoose.connect(mongoDBURL).then(()=>{
