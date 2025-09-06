@@ -3,6 +3,15 @@ const adminRouter = express.Router();
 const {
     getAdminPortal, 
     getCreateInvoice,
+    getProducts,
+    getAddProduct,
+    postAddProduct,
+    getEditProduct,
+    postEditProduct,
+    deleteProduct,
+    getProductDetails,
+    getAllProductsAPI,
+    getProductById,
     createInvoice,
     getAllInvoices,
     downloadInvoicePDF,
@@ -15,6 +24,19 @@ const {requireAdminAuth} = require('../controllers/authController');
 adminRouter.get('/admin-portal', requireAdminAuth, getAdminPortal);
 adminRouter.get('/portal', requireAdminAuth, getAdminPortal); // Alias for easier navigation
 adminRouter.get('/create-invoice', requireAdminAuth, getCreateInvoice);
+
+// Product management routes
+adminRouter.get('/products', requireAdminAuth, getProducts);
+adminRouter.get('/products/add', requireAdminAuth, getAddProduct);
+adminRouter.post('/products/add', requireAdminAuth, postAddProduct);
+adminRouter.get('/products/edit/:id', requireAdminAuth, getEditProduct);
+adminRouter.post('/products/edit/:id', requireAdminAuth, postEditProduct);
+adminRouter.post('/products/delete/:id', requireAdminAuth, deleteProduct);
+adminRouter.get('/products/details/:id', requireAdminAuth, getProductDetails);
+
+// API routes for products
+adminRouter.get('/api/products', requireAdminAuth, getAllProductsAPI);
+adminRouter.get('/api/products/:id', requireAdminAuth, getProductById);
 
 // Invoice management routes  
 adminRouter.post('/create-invoice', requireAdminAuth, createInvoice);
