@@ -17,7 +17,8 @@ const {
     getAllInvoices,
     downloadInvoicePDF,
     viewInvoicePreview,
-    deleteInvoice
+    deleteInvoice,
+    getGoogleDriveStatus
 } = require('../controllers/adminController');
 const {requireAdminAuth} = require('../controllers/authController');
 
@@ -43,8 +44,11 @@ adminRouter.get('/api/products/:id', requireAdminAuth, getProductById);
 adminRouter.post('/create-invoice', requireAdminAuth, createInvoice);
 adminRouter.get('/generate-pdf/:invoiceId', requireAdminAuth, generateInvoicePDF);
 adminRouter.get('/invoices', requireAdminAuth, getAllInvoices);
-adminRouter.get('/download-pdf/:invoiceId', requireAdminAuth, downloadInvoicePDF);
+adminRouter.get('/admin-download-pdf/:invoiceId', requireAdminAuth, downloadInvoicePDF);
 adminRouter.get('/view-pdf/:invoiceId', requireAdminAuth, viewInvoicePreview); // Invoice preview (HTML)
 adminRouter.delete('/delete-invoice/:invoiceId', requireAdminAuth, deleteInvoice); // Delete invoice
+
+// Google Drive Management
+adminRouter.get('/google-drive', requireAdminAuth, getGoogleDriveStatus);
 
 module.exports = adminRouter;

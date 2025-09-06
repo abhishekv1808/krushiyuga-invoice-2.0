@@ -6,8 +6,29 @@ yarn-error.log*
 
 # Generated invoices and test files
 public/invoices/*.pdf
-test-invoice.js
-test-output/
+test-*.js
+debug-*.js
+check*.js
+create-test-*.js
+testAdmin*.js
+testUser*.js
+testInvoice*.js
+
+# User-related files and directories (admin-only version)
+views/user/
+models/OTP.js
+utils/emailConfig.js
+
+# Documentation and notes
+note.txt
+*-GUIDE.md
+*-SETUP.md
+*-SUMMARY.md
+
+# Backup and temp files
+app,.js
+*.bak
+*.backup
 
 # Runtime data
 pids

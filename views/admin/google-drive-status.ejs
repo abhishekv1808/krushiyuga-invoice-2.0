@@ -1,0 +1,349 @@
+<%- include('../partials/head.ejs') %>
+
+    <body>
+        <%- include('../partials/navbar.ejs') %>
+
+            <div class="container mx-auto px-4 py-8">
+                <div class="max-w-6xl mx-auto">
+                    <!-- Header -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-800">Google Drive Integration</h1>
+                                <p class="text-gray-600 mt-1">Manage cloud storage for your invoices</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <% if (isConfigured) { %>
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Connected
+                                    </span>
+                                    <% } else { %>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                            Not Configured
+                                        </span>
+                                        <% } %>
+                                            <a href="/admin-portal"
+                                                class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300">
+                                                Back to Portal
+                                            </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <% if (errorMessage) { %>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">
+                                        <%= errorMessage %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <% if (successMessage) { %>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-green-700">
+                                                <%= successMessage %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <!-- Configuration Status -->
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                                        <!-- Status Card -->
+                                        <div class="bg-white rounded-lg shadow-md p-6">
+                                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Configuration Status
+                                            </h2>
+
+                                            <% if (isConfigured) { %>
+                                                <div class="space-y-3">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <span class="text-green-700">Google Drive API Connected</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <span class="text-green-700">Service Account Configured</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <span class="text-green-700">Auto-upload Enabled</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                                                    <p class="text-sm text-green-700">
+                                                        <strong>✅ Ready to go!</strong> New invoices will automatically
+                                                        be uploaded to Google Drive.
+                                                    </p>
+                                                </div>
+                                                <% } else { %>
+                                                    <div class="space-y-3">
+                                                        <div class="flex items-center">
+                                                            <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                                    clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            <span class="text-red-700">Service Account Not Found</span>
+                                                        </div>
+                                                        <div class="flex items-center">
+                                                            <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                                    clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            <span class="text-red-700">Auto-upload Disabled</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                                                        <p class="text-sm text-yellow-700">
+                                                            <strong>⚠️ Setup Required:</strong> Follow the setup
+                                                            instructions to enable Google Drive storage.
+                                                        </p>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+
+                                        <!-- Quick Actions -->
+                                        <div class="bg-white rounded-lg shadow-md p-6">
+                                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+
+                                            <div class="space-y-3">
+                                                <a href="/admin/create-invoice"
+                                                    class="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition duration-300 block text-center">
+                                                    <svg class="w-5 h-5 inline mr-2" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Create New Invoice
+                                                </a>
+
+                                                <a href="/admin/invoices"
+                                                    class="w-full bg-gray-500 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition duration-300 block text-center">
+                                                    <svg class="w-5 h-5 inline mr-2" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                                        <path fill-rule="evenodd"
+                                                            d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h4v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    View All Invoices
+                                                </a>
+
+                                                <% if (isConfigured) { %>
+                                                    <button onclick="refreshDriveFiles()"
+                                                        class="w-full bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition duration-300">
+                                                        <svg class="w-5 h-5 inline mr-2" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        Refresh Drive Files
+                                                    </button>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Setup Instructions (if not configured) -->
+                                    <% if (!isConfigured) { %>
+                                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Setup Instructions</h2>
+
+                                            <div class="prose max-w-none">
+                                                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                                                    <div class="flex">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20"
+                                                                fill="currentColor">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                                    clip-rule="evenodd"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <p class="text-sm text-blue-700">
+                                                                <strong>Expected location:</strong> <code
+                                                                    class="bg-white px-2 py-1 rounded text-xs"><%= instructions.expectedLocation %></code>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <ol class="list-decimal list-inside space-y-3">
+                                                    <% instructions.steps.forEach(step=> { %>
+                                                        <li class="text-gray-700">
+                                                            <%= step %>
+                                                        </li>
+                                                        <% }) %>
+                                                </ol>
+
+                                                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                                    <h3 class="font-semibold text-gray-800 mb-2">Need Help?</h3>
+                                                    <p class="text-sm text-gray-600 mb-2">
+                                                        Check the detailed setup guide: <code
+                                                            class="bg-white px-2 py-1 rounded text-xs">GOOGLE_DRIVE_SETUP.md</code>
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">
+                                                        After completing the setup, restart your application to activate
+                                                        the Google Drive integration.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                            <!-- Google Drive Files (if configured) -->
+                                            <% if (isConfigured) { %>
+                                                <div class="bg-white rounded-lg shadow-md p-6">
+                                                    <div class="flex items-center justify-between mb-4">
+                                                        <h2 class="text-xl font-semibold text-gray-800">Google Drive
+                                                            Files</h2>
+                                                        <span class="text-sm text-gray-500">
+                                                            <%= driveFiles.length %> files found
+                                                        </span>
+                                                    </div>
+
+                                                    <% if (driveFiles.length===0) { %>
+                                                        <div class="text-center py-8">
+                                                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                                </path>
+                                                            </svg>
+                                                            <p class="text-gray-500">No invoices found in Google Drive
+                                                            </p>
+                                                            <p class="text-sm text-gray-400 mt-1">Create your first
+                                                                invoice to see it here!</p>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <div class="overflow-x-auto">
+                                                                <table class="min-w-full divide-y divide-gray-200">
+                                                                    <thead class="bg-gray-50">
+                                                                        <tr>
+                                                                            <th
+                                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                                File Name</th>
+                                                                            <th
+                                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                                Created</th>
+                                                                            <th
+                                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                                Size</th>
+                                                                            <th
+                                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                                Actions</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody class="bg-white divide-y divide-gray-200">
+                                                                        <% driveFiles.forEach(file=> { %>
+                                                                            <tr>
+                                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                                    <div class="flex items-center">
+                                                                                        <svg class="w-5 h-5 text-red-500 mr-3"
+                                                                                            fill="currentColor"
+                                                                                            viewBox="0 0 20 20">
+                                                                                            <path fill-rule="evenodd"
+                                                                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                                                                                clip-rule="evenodd">
+                                                                                            </path>
+                                                                                        </svg>
+                                                                                        <span
+                                                                                            class="text-sm font-medium text-gray-900">
+                                                                                            <%= file.name %>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td
+                                                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                                    <%= new
+                                                                                        Date(file.createdTime).toLocaleDateString()
+                                                                                        %>
+                                                                                </td>
+                                                                                <td
+                                                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                                    <%= file.size ? Math.round(file.size
+                                                                                        / 1024) + ' KB' : 'N/A' %>
+                                                                                </td>
+                                                                                <td
+                                                                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                                    <a href="<%= file.webViewLink %>"
+                                                                                        target="_blank"
+                                                                                        class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <% }) %>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <% } %>
+                </div>
+            </div>
+
+            <script>
+                function refreshDriveFiles() {
+                    location.reload();
+                }
+            </script>
+    </body>
+
+    </html>

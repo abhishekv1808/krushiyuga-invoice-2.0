@@ -1,37 +1,30 @@
-# Krushiyuga Invoice Management System 2.0 🌾
+# KrushiYuga Admin Portal 🌾
 
-A comprehensive invoice management system designed specifically for agricultural businesses in India. Built with Node.js, Express, MongoDB, and featuring modern responsive design.
+An admin-only invoice management system for KrushiYuga. This application provides comprehensive invoice management capabilities exclusively for administrators.
 
 ## 🚀 Features
 
-### 🔐 Authentication & Security
+### 🔐 Admin Authentication
 - **Secure Admin Login** with bcrypt password hashing
 - **Session Management** with MongoDB store
-- **Account Locking** after failed login attempts
-- **Route Protection** middleware
+- **Route Protection** middleware for admin-only access
 
-### 📦 Product Management
-- **Complete CRUD Operations** for agricultural products
-- **Advanced Search & Filtering** by name, category, supplier
-- **Pagination** for large product catalogs
-- **Stock Management** with low stock alerts
-- **Product Categories**: Seeds, Fertilizers, Pesticides, Tools, Equipment
-- **Auto SKU Generation** for products
-- **GST Rate Management** per product
-
-### 🧾 Invoice Generation
-- **Product Selection** from database with auto-population
+### 🧾 Invoice Management
+- **Complete CRUD Operations** for invoices
+- **Professional PDF Generation** with QR codes
 - **GST Calculations** compliant with Indian tax system
-- **Hardcoded Business Information** for Krushiyuga
+- **Indian Rupee (₹) Currency** support with proper formatting
 - **Real-time Calculations** for subtotal, GST, discount, and total
-- **Multiple Payment Terms** including advance payments
-- **Indian Rupee (₹) Currency** support
+
+### 📊 Admin Dashboard
+- **Invoice Statistics** and overview
+- **Search and Filter** invoice functionality
+- **Bulk Operations** for invoice management
 
 ### 🎨 Modern UI/UX
 - **Responsive Design** with Tailwind CSS
-- **Interactive Dashboard** with statistics
-- **Modern Card-based Layout**
-- **Mobile-friendly Interface**
+- **Professional Admin Interface**
+- **Mobile-friendly Layout**
 - **Smooth Animations** and transitions
 
 ## 🛠️ Technologies Used
@@ -55,33 +48,49 @@ A comprehensive invoice management system designed specifically for agricultural
    git clone https://github.com/abhishekv1808/krushiyuga-invoice-2.0.git
    cd krushiyuga-invoice-2.0
    ```
+## 📋 Tech Stack
+
+- **Backend**: Node.js with Express.js
+- **Database**: MongoDB Atlas
+- **PDF Generation**: PDFKit
+- **QR Code**: qrcode library
+- **Template Engine**: EJS
+- **Authentication**: bcrypt for password hashing
+- **Session**: express-session
+- **Styling**: Tailwind CSS
+
+## 🔑 Admin Credentials
+
+- **Email**: admin@krushiyuga.com
+- **Password**: Admin@123456
+
+## ⚡ Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd practise-15
+   ```
 
 2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Set up MongoDB**
-   - Install MongoDB locally or use MongoDB Atlas
-   - Update the connection string in `app.js` if needed
-
-4. **Seed the database**
-   ```bash
-   # Create admin user (admin@krushiyuga.com / Admin@123456)
-   node seedAdmin.js
-   
-   # Add sample agricultural products
-   node seedProducts.js
+3. **Set up environment variables**
+   Create a `.env` file with your MongoDB connection string:
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
    ```
 
-5. **Start the application**
+4. **Start the application**
    ```bash
    npm start
-   # or
-   node app.js
    ```
 
-6. **Access the application**
+5. **Access the admin portal**
+   - Open `http://localhost:3000`
+   - Login with admin credentials above
    - Open your browser and go to `http://localhost:3000`
    - Admin login: `http://localhost:3000/auth/admin/login`
 
@@ -93,24 +102,20 @@ A comprehensive invoice management system designed specifically for agricultural
 ## 📁 Project Structure
 
 ```
-krushiyuga-invoice-2.0/
+practise-15/
 ├── controllers/
-│   ├── adminController.js      # Admin & product management
+│   ├── adminController.js      # Admin operations and invoice management
 │   ├── authController.js       # Authentication logic
-│   └── userController.js       # User-facing routes
-├── models/
-│   ├── Admin.js               # Admin user schema
-│   ├── Invoice.js             # Invoice schema
-│   └── Product.js             # Product schema
+│   └── userController.js       # Placeholder (empty)
+├── models/                     # Database models
 ├── routes/
 │   ├── adminRouter.js         # Admin routes
 │   ├── authRouter.js          # Authentication routes
-│   └── userRouter.js          # User routes
+│   └── userRouter.js          # Placeholder (empty)
 ├── views/
 │   ├── admin/                 # Admin panel templates
 │   ├── auth/                  # Login templates
-│   ├── partials/              # Reusable components
-│   └── user/                  # User-facing templates
+│   └── partials/              # Reusable components
 ├── public/
 │   ├── images/                # Static images
 │   └── output.css             # Tailwind CSS output
@@ -126,32 +131,38 @@ krushiyuga-invoice-2.0/
 - Phone: 9876543210
 - Email: info@krushiyuga.com
 
-## 📊 Key Features in Detail
+## 📊 Admin Features
 
-### Product Management
-- **Categories**: Seeds, Fertilizers, Pesticides, Tools, Equipment, Irrigation, Storage
-- **Inventory Tracking**: Stock quantity with low stock alerts
-- **Supplier Information**: Manage supplier details and contact information
-- **Pricing**: Purchase price, selling price, and margin calculations
-- **GST Compliance**: HSN codes and GST rates for each product
+### Invoice Management
+- **Create Invoices**: Generate new invoices with client details
+- **View All Invoices**: Browse complete invoice list with search
+- **Edit Invoices**: Modify existing invoice details
+- **Delete Invoices**: Remove invoices from system
+- **PDF Generation**: Download professional invoices with QR codes
 
 ### Invoice System
 - **Auto-numbering**: Automatic invoice number generation (KRU-2025-XXXX)
-- **Product Integration**: Select products from database with auto-filled details
 - **Tax Calculations**: Automatic GST calculation per item and total
 - **Flexible Pricing**: Editable rates while maintaining product defaults
 - **Discount Management**: Percentage-based discounts
 - **Payment Terms**: Multiple payment options for agricultural businesses
 
-## 🔧 Configuration
+- **Currency Support**: Indian Rupee (₹) with proper formatting
+- **Professional PDFs**: QR codes and company branding
+- **Responsive Design**: Works on all devices
 
-Update the MongoDB connection string in `app.js`:
-```javascript
-mongoose.connect('mongodb://localhost:27017/krushiyuga-invoice', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-```
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /auth/admin/login` - Admin login
+
+### Admin Panel
+- `GET /admin/dashboard` - Admin dashboard
+- `GET /admin/invoices` - List all invoices
+- `POST /admin/create-invoice` - Create new invoice
+- `PUT /admin/edit-invoice/:id` - Edit invoice
+- `DELETE /admin/delete-invoice/:id` - Delete invoice
+- `GET /admin/download-invoice/:id` - Download invoice PDF
 
 ## 🤝 Contributing
 
@@ -163,21 +174,12 @@ mongoose.connect('mongodb://localhost:27017/krushiyuga-invoice', {
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is proprietary and confidential.
 
 ## 📞 Contact
 
-**Abhishek V**
-- GitHub: [@abhishekv1808](https://github.com/abhishekv1808)
-- Email: abhishek.v1808@gmail.com
-
-## 🙏 Acknowledgments
-
-- Built for Krushiyuga Agricultural Solutions & Services
-- Tailwind CSS for the beautiful UI components
-- MongoDB for reliable data storage
-- Express.js for the robust backend framework
+For support or inquiries, please contact the development team.
 
 ---
 
-**Made with ❤️ for Indian Agriculture** 🇮🇳
+**Admin-Only Invoice Management System** �

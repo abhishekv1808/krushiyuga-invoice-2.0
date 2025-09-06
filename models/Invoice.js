@@ -68,6 +68,20 @@ const invoiceSchema = new mongoose.Schema({
         default: null
     },
     
+    // Google Drive Storage
+    googleDriveFileId: {
+        type: String, // Google Drive file ID
+        default: null
+    },
+    googleDriveUrl: {
+        type: String, // Direct Google Drive URL
+        default: null
+    },
+    googleDriveViewLink: {
+        type: String, // Public view link
+        default: null
+    },
+    
     // Business Information (Krushiyuga - always same)
     from: {
         companyName: {
@@ -170,8 +184,23 @@ const invoiceSchema = new mongoose.Schema({
     // Status
     status: {
         type: String,
-        enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'],
+        enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled', 'pending'],
         default: 'draft'
+    },
+    
+    // For easier querying in user access flow
+    customerEmail: {
+        type: String,
+        index: true
+    },
+    
+    // Payment and access tracking
+    lastAccessedAt: {
+        type: Date
+    },
+    accessCount: {
+        type: Number,
+        default: 0
     },
     
     // Admin who created
@@ -210,6 +239,11 @@ invoiceSchema.pre('save', async function(next) {
 
 // Calculate totals before saving
 invoiceSchema.pre('save', function(next) {
+    // Automatically populate customerEmail for easier querying
+    if (this.to && this.to.email && !this.customerEmail) {
+        this.customerEmail = this.to.email.toLowerCase();
+    }
+    
     // Calculate subtotal and total GST
     this.subtotal = this.items.reduce((sum, item) => sum + item.amount, 0);
     this.totalGST = this.items.reduce((sum, item) => sum + item.gstAmount, 0);
