@@ -6,7 +6,6 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const rootDir = require('./utils/mainUtils');
 const mongoose =require('mongoose');
 const mongoDBURL = process.env.MONGODB_URI || 'mongodb+srv://abhishekv1808:' + encodeURIComponent('Grow@$@2025') + '@aribnb.xvmlcnz.mongodb.net/practise-invoice?retryWrites=true&w=majority&appName=aribnb';
-const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
 const authRouter = require('./routes/authRouter');
 
@@ -38,8 +37,6 @@ app.use(session({
     }
 }));
 
-
-app.use(userRouter);
 app.use(adminRouter);
 app.use(authRouter);
 

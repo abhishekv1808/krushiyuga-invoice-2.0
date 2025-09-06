@@ -13,11 +13,14 @@ create-test-*.js
 testAdmin*.js
 testUser*.js
 testInvoice*.js
+reset-*.js
 
 # User-related files and directories (admin-only version)
 views/user/
 models/OTP.js
 utils/emailConfig.js
+routes/userRouter.js
+controllers/userController.js
 
 # Documentation and notes
 note.txt
